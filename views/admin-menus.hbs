@@ -1,0 +1,37 @@
+<div class="container py-5">
+  <div class="card p-4 mb-4">
+    <h2 class="mb-3 fw-bold text-primary">Menús principales</h2>
+    <form method="post" action="/admin/menus/add" class="row g-2 align-items-end mb-3">
+      <div class="col-md-5">
+        <label class="form-label">Nombre del menú</label>
+        <input type="text" name="nombre" class="form-control" required>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">Ruta (opcional)</label>
+        <input type="text" name="ruta" class="form-control">
+      </div>
+      <div class="col-md-2 d-grid">
+        <button class="btn btn-success" type="submit"><i class="bi bi-plus-circle"></i> Agregar</button>
+      </div>
+    </form>
+    <ul class="list-group">
+      {{#each menus}}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{nombre}}</strong>
+            {{#if ruta}}<small class="text-secondary">({{ruta}})</small>{{/if}}
+          </div>
+          <div>
+            <a href="/admin/menus/edit/{{id}}" class="btn btn-warning btn-sm">Editar</a>
+            <a href="/admin/submenus/{{id}}" class="btn btn-primary btn-sm">Submenús</a>
+            <form method="post" action="/admin/menus/delete" class="d-inline ms-1">
+              <input type="hidden" name="id" value="{{id}}">
+              <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+            </form>
+          </div>
+        </li>
+      {{/each}}
+    </ul>
+    <a href="/dashboard" class="btn btn-outline-secondary mt-4 w-100"><i class="bi bi-arrow-left"></i> Volver al dashboard</a>
+  </div>
+</div>

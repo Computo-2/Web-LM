@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formulario centrado</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fdfdfd;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .titulo-principal {
+            text-align: center;
+            font-weight: bold;
+            color: #1E3A8A;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .bloque-formulario {
+            position: relative;
+            background-color: #1E3A8A;
+            border-radius: 10px;
+            padding: 60px 20px;
+            color: white;
+            overflow: hidden;
+        }
+
+        .texto-izquierda {
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .contenedor-formulario {
+            background-color: white;
+            border-radius: 25px;
+            padding: 30px;
+            max-width: 400px;
+            box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            position: relative;
+        }
+
+        .form-control {
+            border: none;
+            border-bottom: 1px solid #000;
+            border-radius: 0;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #1E3A8A;
+        }
+
+        .boton-enviar {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        /* Decoraciones */
+        .decor-cuadro-negro,
+        .decor-cuadro-blanco,
+        .decor-estrella,
+        .decor-flecha {
+            position: absolute;
+            z-index: 1;
+        }
+
+        .decor-cuadro-negro {
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: black;
+            transform: rotate(15deg);
+        }
+
+        .decor-cuadro-blanco {
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            width: 35px;
+            height: 35px;
+            background-color: white;
+        }
+
+        .decor-estrella {
+            bottom: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .decor-flecha {
+            bottom: 60px;
+            left: 90px;
+            font-size: 2rem;
+            transform: rotate(-45deg);
+        }
+
+        @media (max-width: 768px) {
+            .text-center-md {
+                text-align: center;
+            }
+
+            .decor-flecha,
+            .decor-cuadro-negro,
+            .decor-cuadro-blanco,
+            .decor-estrella {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container my-5">
+        <h2 class="titulo-principal">Recibe más información</h2>
+
+        <div class="bloque-formulario">
+
+            <!-- Decoraciones -->
+            <div class="decor-cuadro-negro"></div>
+            <div class="decor-cuadro-blanco"></div>
+            <div class="decor-estrella">★</div>
+            <div class="decor-flecha">➤</div>
+
+            <div class="row justify-content-center align-items-center text-center text-md-start">
+                <!-- Texto -->
+                <div class="col-md-4 mb-4 mb-md-0 px-4">
+                    <p class="texto-izquierda">Mantente al tanto y<br> recibe lo más reciente</p>
+                </div>
+
+                <!-- Formulario centrado -->
+                <div class="col-md-6 d-flex justify-content-center">
+                    <div class="contenedor-formulario">
+                        <form method="POST" action="/formulario-contacto" id="infoForm" autocomplete="off">
+                            <input type="text" class="form-control" name="nombre" placeholder="Nombre" required
+                                minlength="2" maxlength="100">
+                            <input type="email" class="form-control" name="email" placeholder="Email" required
+                                maxlength="100" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$">
+
+                            <!-- SELECT agregado aquí -->
+                            <select class="form-control mb-3" name="interes" required>
+                                <option value="" disabled selected>¿Qué tema te interesa?</option>
+                                <option>Precios</option>
+                                <option>Plan de Estudios</option>
+                                <option>Becas</option>
+                                <option>Talleres</option>
+                                <option>Viajes</option>
+                                <option>Vinculación Universitaria</option>
+                                <option>Orientación Vocacional</option>
+                            </select>
+
+                            <textarea class="form-control" rows="3" name="mensaje" placeholder="Mensaje" required
+                                maxlength="500"></textarea>
+                            <!-- Honeypot anti-bot oculto -->
+                            <input type="text" name="website" style="display:none">
+                            <button type="submit" class="boton-enviar">Enviar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.getElementById('infoForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const form = e.target;
+    // Validación: asegúrate de que seleccionó una opción válida
+    if(form.nombre.value.trim().length < 2 ||
+       form.email.value.trim() === "" ||
+       form.mensaje.value.trim().length < 5 ||
+       !form.interes.value) {
+        Swal.fire('Datos inválidos', 'Por favor, completa correctamente todos los campos y selecciona un tema de interés.', 'warning');
+        return;
+    }
+    // Honeypot anti-bot
+    if(form.website.value) return;
+
+    const data = {
+        nombre: form.nombre.value,
+        email: form.email.value,
+        interes: form.interes.value,
+        mensaje: form.mensaje.value,
+        website: form.website.value
+    };
+    try {
+        const resp = await fetch('/formulario-contacto', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(data)
+        });
+        const result = await resp.json();
+        if(result.ok){
+            Swal.fire('¡Enviado!', 'Tus datos se han registrado correctamente.', 'success');
+            form.reset();
+        } else {
+            Swal.fire('Error', result.error || 'No se pudo registrar. Intenta de nuevo.', 'error');
+        }
+    } catch (err) {
+        Swal.fire('Error', 'Hubo un problema al enviar los datos.', 'error');
+    }
+});
+</script>
+</body>
+</html>

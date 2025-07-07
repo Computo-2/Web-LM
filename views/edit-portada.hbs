@@ -1,0 +1,45 @@
+<div class="container py-5">
+    <div class="card p-4 mx-auto" style="max-width:500px;">
+        <h2 class="mb-4 text-primary">Editar portada de fondo</h2>
+        <form method="post" action="/admin/web/portada">
+            <div class="mb-3">
+                <label class="form-label">Tipo de fondo</label>
+                <select name="tipo" class="form-select" required>
+                    <option value="imagen" {{#if (eq portada.tipo "imagen" )}}selected{{/if}}>Imagen (jpg/png)</option>
+                    <option value="mp4" {{#if (eq portada.tipo "mp4" )}}selected{{/if}}>Video MP4</option>
+                    <option value="vimeo" {{#if (eq portada.tipo "vimeo" )}}selected{{/if}}>Vimeo</option>
+                    <option value="youtube" {{#if (eq portada.tipo "youtube" )}}selected{{/if}}>YouTube</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label id="labelTipoPortada" class="form-label">
+                    {{#if (eq portada.tipo "imagen")}}URL de imagen{{/if}}
+                    {{#if (eq portada.tipo "mp4")}}URL de video MP4{{/if}}
+                    {{#if (eq portada.tipo "vimeo")}}ID de Vimeo (ej: 123456789){{/if}}
+                    {{#if (eq portada.tipo "youtube")}}ID de YouTube (ej: dQw4w9WgXcQ){{/if}}
+                </label>
+                <input type="text" name="url" class="form-control" value="{{portada.url}}" required>
+            </div>
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-success" type="submit">Guardar</button>
+                <a href="/dashboard" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tipoSelect = document.querySelector('select[name="tipo"]');
+  const label = document.getElementById('labelTipoPortada');
+  const labels = {
+    imagen: 'URL de imagen',
+    mp4: 'URL de video MP4',
+    vimeo: 'ID de Vimeo (ej: 123456789)',
+    youtube: 'ID de YouTube (ej: dQw4w9WgXcQ)'
+  };
+
+  tipoSelect.addEventListener('change', function() {
+    label.textContent = labels[tipoSelect.value] || 'URL';
+  });
+});
+</script>

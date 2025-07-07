@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Liceo Michoacano</title>
+    <meta name="author" content="TebanLuc">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .img-fluid {
+            max-height: 120px;
+            object-fit: contain;
+        }
+
+        .resena-card {
+            border: 2px solid #000;
+            border-radius: 15px;
+            box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin: 10px;
+        }
+
+
+        .titulo-principal {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .numero-azul {
+            font-size: 5rem;
+            font-weight: 900;
+            color: #2E5ACD;
+            -webkit-text-stroke: 2px black;
+        }
+
+        .texto-negrita {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .numero-azul {
+                font-size: 3rem;
+            }
+
+            .texto-negrita {
+                font-size: 1.8rem;
+            }
+        }
+
+        .hero-experiencia {
+            position: relative;
+            background-color: #fdfdfd;
+            padding: 60px 20px;
+            overflow: hidden;
+        }
+
+        .hero-experiencia::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 200px;
+            height: 200px;
+            background-image: url('tu-textura.png');
+            background-size: cover;
+            opacity: 0.1;
+        }
+
+        #calendario {
+            scroll-margin-top: 100px;
+            /* O el tamaño de tu header */
+            padding-top: 30px;
+            /* Opcional */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Hero Section -->
+<section class="position-relative overflow-hidden">
+  {{#if (eq portada.tipo "imagen")}}
+    <img src="{{portada.url}}" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover z-n1" alt="Portada">
+  {{else if (eq portada.tipo "mp4")}}
+    <video class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover z-n1" autoplay loop muted playsinline preload="auto">
+      <source src="{{portada.url}}" type="video/mp4">
+      Tu navegador no soporta video.
+    </video>
+  {{else if (eq portada.tipo "vimeo")}}
+    <div class="position-absolute top-0 start-0 w-100 h-100 z-n1 ratio ratio-16x9" style="pointer-events:none">
+      <iframe src="https://player.vimeo.com/video/{{portada.url}}" frameborder="0" allowfullscreen style="width:100%;height:100%;pointer-events:none"></iframe>
+    </div>
+  {{else if (eq portada.tipo "youtube")}}
+    <div class="position-absolute top-0 start-0 w-100 h-100 z-n1 ratio ratio-16x9" style="pointer-events:none">
+      <iframe src="https://www.youtube.com/embed/{{portada.url}}?autoplay=1&mute=1&loop=1&playlist={{portada.url}}" frameborder="0" allowfullscreen style="width:100%;height:100%;pointer-events:none"></iframe>
+    </div>
+  {{/if}}
+  <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark z-0"
+      style="opacity: 0.85; mix-blend-mode: multiply; filter: contrast(1.15) brightness(0.85);"></div>
+
+  <!-- Tu contenido (no cambia) -->
+  <div class="container position-relative z-1">
+    <div class="row align-items-center min-vh-100 py-5 gy-5">
+      <div class="col-12 col-xl-8 text-center text-xl-start">
+        <div class="mx-auto mx-xl-0" style="max-width: 600px;">
+          <h1 class="text-white fw-bold display-4 display-md-3" data-aos="fade" data-aos-duration="3000">
+            BIENVENIDO A <br> LICEO MICHOACANO
+          </h1>
+          <div class="mt-4 d-flex justify-content-center justify-content-xl-start gap-3">
+            <a href="#calendario" class="btn btn-lg btn-primary fw-semibold text-white"
+                style="font-size: 12px;">
+                AGENDAR CITA
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-4 text-center d-none d-xl-block">
+        <div class="pt-xl-5">
+            <img src="iconos/favicom@1.5x.png" alt="Liceo Logo" class="img-fluid" style="max-width: 500px;">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <!-- Servicios-->
+    {{> servicios}}
+
+    <!-- Calendario -->
+    <section id="calendario">
+        {{> calendar}}
+    </section>
+    <!-- Reseñas -->
+    {{> experienciasT}}
+
+    <!-- Carrusel de video -->
+    {{> experienciasV}}
+
+    <!-- Redes sociales -->
+
+    <!-- Formulario -->
+    {{> formulario}}
+
+    <script>
+        document.querySelectorAll('a[href="#calendario"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const calendario = document.querySelector('#calendario');
+                const offset = 100; // Cambia esto si tu header es más chico/grande
+                const top = calendario.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({ top, behavior: 'smooth' });
+            });
+        });
+    </script>
+
+    <!-- Bootstrap JavaScript: Bundle with Popper -->
+    <script src="./assets/libraries/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="./assets/libraries/glide/glide.min.js"></script>
+    <script src="./assets/libraries/aos/aos.js"></script>
+    <script src="./assets/js/scripts.js"></script>

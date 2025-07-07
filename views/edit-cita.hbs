@@ -1,0 +1,38 @@
+<div class="container py-5">
+  <div class="card p-4">
+    <h2 class="mb-4 text-warning"><i class="bi bi-pencil"></i> Editar cita</h2>
+    <form method="post" action="/admin/citas/edit/{{cita.id}}" class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Fecha</label>
+        <input type="date" class="form-control" name="fecha" value="{{cita.fecha}}" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Hora</label>
+        <input type="time" class="form-control" name="hora" value="{{cita.hora}}" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Tipo de cita</label>
+        <select class="form-select" name="tipo_cita" required>
+          <option value="Experiencia Liceo" {{#if (eq cita.tipo_cita "Experiencia Liceo")}}selected{{/if}}>Experiencia Liceo</option>
+          <option value="Asesor Académico" {{#if (eq cita.tipo_cita "Asesor Académico")}}selected{{/if}}>Asesor Académico</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" name="nombre" value="{{cita.nombre}}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Contacto</label>
+        <input type="text" class="form-control" name="contacto" value="{{cita.contacto}}" required>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Nota</label>
+        <textarea class="form-control" name="nota">{{cita.nota}}</textarea>
+      </div>
+      <div class="col-12 d-flex gap-2 mt-3">
+        <button class="btn btn-success" type="submit"><i class="bi bi-save"></i> Guardar cambios</button>
+        <a href="/admin/citas" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+      </div>
+    </form>
+  </div>
+</div>

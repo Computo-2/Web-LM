@@ -1,0 +1,62 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-xl-6">
+      <div class="card shadow rounded-4 p-4">
+        <h2 class="mb-4 fw-bold text-success">
+          <i class="bi bi-people"></i> Gestión de usuarios
+        </h2>
+
+        <!-- Formulario para agregar usuario -->
+        <form method="post" action="/admin/usuarios/add" class="row g-3 align-items-end mb-4">
+          <div class="col-md-4">
+            <label for="username" class="form-label">Usuario</label>
+            <input type="text" name="username" id="username" class="form-control" placeholder="Usuario" required>
+          </div>
+          <div class="col-md-4">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña" required>
+          </div>
+          <div class="col-md-3">
+            <label for="rol" class="form-label">Rol</label>
+            <select name="rol" id="rol" class="form-select" required>
+              <option value="admin">Admin</option>
+              <option value="ventas">Ventas</option>
+            </select>
+          </div>
+          <div class="col-md-1 d-grid">
+            <button type="submit" class="btn btn-success mt-3">
+              <i class="bi bi-plus-circle"></i>
+            </button>
+          </div>
+        </form>
+
+        <!-- Lista de usuarios -->
+        <ul class="list-group shadow-sm mb-4">
+          {{#each users}}
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div>
+                <strong class="text-dark">{{username}}</strong>
+                <span class="badge bg-info text-dark ms-2 text-uppercase">{{rol}}</span>
+              </div>
+              <div>
+                <a href="/admin/usuarios/edit/{{id}}" class="btn btn-warning btn-sm me-1">
+                  <i class="bi bi-pencil"></i> Editar
+                </a>
+                <form method="post" action="/admin/usuarios/delete" class="d-inline">
+                  <input type="hidden" name="id" value="{{id}}">
+                  <button type="submit" class="btn btn-danger btn-sm">
+                    <i class="bi bi-trash"></i> Eliminar
+                  </button>
+                </form>
+              </div>
+            </li>
+          {{/each}}
+        </ul>
+
+        <a href="/dashboard" class="btn btn-outline-secondary w-100 mt-2">
+          <i class="bi bi-arrow-left"></i> Volver al dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

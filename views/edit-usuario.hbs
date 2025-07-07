@@ -1,0 +1,15 @@
+<div class="container py-5">
+  <div class="card p-4">
+    <h2 class="mb-3 text-warning"><i class="bi bi-pencil"></i> Editar usuario</h2>
+    <form method="post" action="/admin/usuarios/edit/{{userToEdit.id}}">
+      <input type="text" name="username" class="form-control mb-2" value="{{userToEdit.username}}" required>
+      <input type="password" name="password" class="form-control mb-2" value="{{userToEdit.password}}" required>
+      <select name="rol" class="form-select mb-2" required>
+        <option value="admin" {{#if (eq userToEdit.rol "admin")}}selected{{/if}}>admin</option>
+        <option value="ventas" {{#if (eq userToEdit.rol "ventas")}}selected{{/if}}>ventas</option>
+      </select>
+      <button type="submit" class="btn btn-warning">Guardar cambios</button>
+      <a href="/admin/usuarios" class="btn btn-outline-secondary ms-2">Cancelar</a>
+    </form>
+  </div>
+</div>

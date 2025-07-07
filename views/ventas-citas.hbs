@@ -1,0 +1,70 @@
+<div class="container py-5">
+  <div class="card p-4 mb-5">
+    <h2 class="mb-4 text-primary"><i class="bi bi-calendar-check"></i> Citas agendadas</h2>
+    {{#if citas.length}}
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Tipo</th>
+            <th>Nombre</th>
+            <th>Contacto</th>
+            <th>Nota</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each citas}}
+          <tr>
+            <td>{{formatFechaLarga fecha}}</td>
+            <td>{{formatHora12 hora}}</td>
+            <td>{{tipo_cita}}</td>
+            <td>{{nombre}}</td>
+            <td>{{contacto}}</td>
+            <td>{{nota}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    {{else}}
+      <div class="alert alert-info">No hay citas agendadas aún.</div>
+    {{/if}}
+  </div>
+
+  <div class="card p-4">
+    <h2 class="mb-4 text-success"><i class="bi bi-envelope"></i> Mensajes de contacto</h2>
+    {{#if contactos.length}}
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Fecha</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Interés</th>
+            <th>Mensaje</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each contactos}}
+          <tr>
+            <td>{{formatFechaLarga fecha}}</td>
+            <td>{{nombre}}</td>
+            <td>{{email}}</td>
+            <td>{{interes}}</td>
+            <td style="max-width:200px; white-space:pre-wrap;">{{mensaje}}</td>
+            <td>{{ip}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    {{else}}
+      <div class="alert alert-info">No hay mensajes de contacto aún.</div>
+    {{/if}}
+  </div>
+      <a href="/dashboard" class="btn btn-outline-secondary mt-4"><i class="bi bi-arrow-left"></i> Volver al dashboard</a>
+</div>

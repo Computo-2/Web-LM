@@ -1,0 +1,48 @@
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<style>
+body {
+  background: #f3f6f9 url('/img/protada.png') no-repeat center center fixed;
+  background-size: cover;
+}
+  .login-card {
+    backdrop-filter: blur(4px);
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 1.2rem;
+    box-shadow: 0 8px 24px rgba(30,58,138,0.18);
+  }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100" style="min-height: 100vh;">
+  <div class="card login-card p-4 shadow" style="max-width: 400px; width: 100%;">
+    <div class="text-center mb-4 justify-content-center">
+      <img src="/iconos/favicom@1.5x.png" alt="Logo" style="height:60px;">
+    </div>
+    <form method="post" action="/accesoweb">
+      <div class="mb-3 text-center">
+        <input type="text" class="form-control text-center" id="username" name="username" placeholder="Ingresa Tu Usuario" required>
+      </div>
+      <div class="mb-3 text-center">
+        <input type="password" class="form-control text-center" id="password" name="password" placeholder="Ingresa Tu Contraseña" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+    </form>
+  </div>
+</div>
+
+<!-- SWEETALERT2 JS (esto es obligatorio) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{{#if message}}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de acceso',
+        text: '{{message}}',
+        confirmButtonColor: '#1E3A8A'
+      });
+    });
+  </script>
+{{/if}}

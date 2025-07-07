@@ -1,0 +1,18 @@
+<div class="container py-5">
+  <div class="card p-4 mb-4">
+    <h2 class="mb-3 text-warning">Editar submenú</h2>
+    <form method="post" action="/admin/submenus/edit/{{submenu.id}}">
+      <input type="hidden" name="id_menu" value="{{submenu.id_menu}}">
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" name="nombre" value="{{submenu.nombre}}" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Ruta</label>
+        <input type="text" name="ruta" value="{{submenu.ruta}}" class="form-control">
+      </div>
+      <button type="submit" class="btn btn-warning">Guardar cambios</button>
+      <a href="/admin/submenus/{{submenu.id_menu}}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+    </form>
+  </div>
+</div>

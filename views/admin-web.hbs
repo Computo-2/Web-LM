@@ -1,0 +1,74 @@
+<div class="container py-5">
+  <div class="card p-4 mb-4">
+    <h2 class="mb-4 fw-bold text-primary"><i class="bi bi-gear"></i> Editar Menú Principal y Submenús</h2>
+
+    <!-- Agregar nuevo menú principal -->
+    <form method="post" action="/admin/menus/add" class="row g-2 align-items-end mb-4">
+      <div class="col-md-5">
+        <label class="form-label">Nuevo menú principal</label>
+        <input type="text" name="nombre" class="form-control" placeholder="Nombre del menú" required>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">Ruta (opcional)</label>
+        <input type="text" name="ruta" class="form-control" placeholder="/ejemplo">
+      </div>
+      <div class="col-md-2 d-grid">
+        <button class="btn btn-success" type="submit"><i class="bi bi-plus-circle"></i> Agregar</button>
+      </div>
+    </form>
+
+    <!-- Listado de menús y submenús -->
+    <ul class="list-group mb-4">
+      {{#each menus}}
+      <li class="list-group-item">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <strong class="fs-5">{{nombre}}</strong>
+            {{#if ruta}}<span class="text-muted ms-2">({{ruta}})</span>{{/if}}
+          </div>
+          <div>
+            <form method="post" action="/admin/menus/delete" class="d-inline">
+              <input type="hidden" name="id" value="{{id}}">
+              <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+            </form>
+            <a href="/admin/menus/edit/{{id}}" class="btn btn-warning btn-sm ms-1"><i class="bi bi-pencil"></i></a>
+          </div>
+        </div>
+        <!-- Formulario para agregar submenú -->
+        <form method="post" action="/admin/submenus/add" class="row g-2 align-items-end mb-2">
+          <input type="hidden" name="id_menu" value="{{id}}">
+          <div class="col-md-5">
+            <input type="text" name="nombre" class="form-control" placeholder="Nuevo submenú" required>
+          </div>
+          <div class="col-md-5">
+            <input type="text" name="ruta" class="form-control" placeholder="/ruta-submenú">
+          </div>
+          <div class="col-md-2 d-grid">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-plus-circle"></i></button>
+          </div>
+        </form>
+        <!-- Lista de submenús -->
+        <ul class="list-group">
+          {{#each submenus}}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              {{nombre}}
+              {{#if ruta}}<small class="text-muted ms-2">({{ruta}})</small>{{/if}}
+            </div>
+            <div>
+              <form method="post" action="/admin/submenus/delete" class="d-inline">
+                <input type="hidden" name="id" value="{{id}}">
+                <input type="hidden" name="id_menu" value="{{../id}}">
+                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+              </form>
+              <a href="/admin/submenus/edit/{{id}}" class="btn btn-warning btn-sm ms-1"><i class="bi bi-pencil"></i></a>
+            </div>
+          </li>
+          {{/each}}
+        </ul>
+      </li>
+      {{/each}}
+    </ul>
+    <a href="/dashboard" class="btn btn-outline-secondary mt-3 w-100"><i class="bi bi-arrow-left"></i> Volver al dashboard</a>
+  </div>
+</div>

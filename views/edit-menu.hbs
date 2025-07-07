@@ -1,0 +1,17 @@
+<div class="container py-5">
+  <div class="card p-4 mb-4">
+    <h2 class="mb-3 text-warning">Editar menú principal</h2>
+    <form method="post" action="/admin/menus/edit/{{menu.id}}">
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" name="nombre" value="{{menu.nombre}}" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Ruta (opcional)</label>
+        <input type="text" name="ruta" value="{{menu.ruta}}" class="form-control">
+      </div>
+      <button type="submit" class="btn btn-warning">Guardar cambios</button>
+      <a href="/admin/menus" class="btn btn-outline-secondary ms-2">Cancelar</a>
+    </form>
+  </div>
+</div>

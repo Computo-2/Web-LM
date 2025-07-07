@@ -1,0 +1,98 @@
+<style>
+    body {
+        background: #f3f6f9 url('/img/protada.png') no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .dashboard-card {
+        border-radius: 1.2rem;
+        box-shadow: 0 6px 24px rgba(30, 58, 138, 0.12);
+        background: rgba(255, 255, 255, 0.96);
+    }
+</style>
+
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card p-4 text-center dashboard-card">
+                <div class="d-flex justify-content-center">
+                    <img src="/iconos/favicom@1.5x.png" style="height:60px; width:60px;" alt="Logo">
+                </div>
+                <h2 class="fw-bold text-primary mb-2">Bienvenido, {{user.username}}</h2>
+                <hr>
+
+                <!-- Switch solo para admin -->
+                {{#if (eq user.rol "admin")}}
+                <div class="alert alert-warning text-center mb-3">
+                    <form id="form-mantenimiento" class="d-inline-block" autocomplete="off" onsubmit="return false">
+                        <span class="me-2"><i class="bi bi-tools"></i> Modo mantenimiento:</span>
+                        <div class="form-check form-switch d-inline-block align-middle">
+                            <input class="form-check-input" type="checkbox" id="toggle-mantenimiento" {{#if
+                                mantenimiento}}checked{{/if}}>
+                            <label class="form-check-label ms-2 fw-bold" id="label-mantenimiento"
+                                for="toggle-mantenimiento">
+                                {{#if mantenimiento}}Activado{{else}}Desactivado{{/if}}
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script>
+                    document.getElementById('toggle-mantenimiento')?.addEventListener('change', function () {
+                        fetch('/admin/mantenimiento', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ activo: this.checked ? 1 : 0 })
+                        })
+                            .then(r => r.json())
+                            .then(data => {
+                                document.getElementById('label-mantenimiento').textContent = data.mantenimiento ? 'Activado' : 'Desactivado';
+                                if (data.mantenimiento) {
+                                    Swal.fire('Modo mantenimiento activado', '¡El sitio solo será visible para administradores!', 'warning')
+                                        .then(() => window.location.reload());
+                                } else {
+                                    Swal.fire('Modo mantenimiento desactivado', 'El sitio vuelve a estar disponible para todos.', 'success')
+                                        .then(() => window.location.reload());
+                                }
+                            });
+                    });
+                </script>
+                {{/if}}
+                <!-- Fin del switch -->
+
+                <!-- Opciones para admin -->
+                {{#if (eq user.rol "admin")}}
+                <h4 class="text-success mb-3">Panel de Administración</h4>
+                <div class="d-grid gap-2">
+                    <a href="/admin/usuarios" class="btn btn-outline-success my-1">
+                        <i class="bi bi-people"></i> Gestionar usuarios
+                    </a>
+                    <a href="/admin/web" class="btn btn-outline-secondary my-1">
+                        <i class="bi bi-pencil-square"></i> Editar Menú
+                    </a>
+                    <a href="/admin/web/portada" class="btn btn-outline-warning my-1">
+                        <i class="bi bi-image"></i> Editar portada principal
+                    </a>
+                    <a href="/admin/citas" class="btn btn-outline-primary my-1">
+                        <i class="bi bi-table"></i> Ver citas agendadas
+                    </a>
+                </div>
+                {{/if}}
+
+                <!-- Opciones para ventas -->
+                {{#if (eq user.rol "ventas")}}
+                <h4 class="text-primary mb-3">Panel de Ventas</h4>
+                <div class="d-grid gap-2">
+                    <a href="/ventas/citas" class="btn btn-outline-primary my-1">
+                        <i class="bi bi-table"></i> Ir a tabla de citas
+                    </a>
+                </div>
+                {{/if}}
+
+                <a href="/logout" class="btn btn-danger w-100 mt-4">
+                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

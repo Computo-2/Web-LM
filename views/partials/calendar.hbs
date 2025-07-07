@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Calendario Mejorado</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      background-color: #fdfaf5;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .calendar-container {
+      max-width: 350px;
+      margin: 50px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #3a1e1e;
+      margin-bottom: 10px;
+    }
+
+    .calendar-header button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #1e3a8a;
+      cursor: pointer;
+    }
+
+    .calendar-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .calendar-table th {
+      color: #1e3a8a;
+      font-weight: bold;
+      padding: 10px 0;
+    }
+
+    .calendar-table td {
+      height: 45px;
+      padding: 0;
+    }
+
+    .calendar-day {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .calendar-day:hover {
+      background-color: #0d6efd;
+      color: white;
+    }
+
+    .disabled .calendar-day {
+      color: #ccc;
+      pointer-events: none;
+    }
+
+    .today .calendar-day {
+      background-color: #0d6efd;
+      color: white;
+      font-weight: bold;
+    }
+
+    .weekend {
+      color: #e85959;
+    }
+
+    /* ---- CHIPS SELECCION HORA ---- */
+    .chip-list-horas {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 18px 0 8px 0;
+      min-height: 38px;
+    }
+
+    .chip-hora {
+      padding: 9px 16px;
+      border-radius: 18px;
+      border: 2px solid #d1d5db;
+      background: #f7f7fb;
+      color: #444;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.18s;
+      outline: none;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      user-select: none;
+      margin-bottom: 3px;
+    }
+
+    .chip-hora:hover,
+    .chip-hora:focus-visible {
+      border-color: #6366f1;
+      background: #ede9fe;
+      color: #2a2470;
+    }
+
+    .chip-hora.selected {
+      background: linear-gradient(90deg, #7e81fa, #6269d7);
+      color: #fff;
+      border-color: #6366f1;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(98, 102, 215, 0.10);
+    }
+
+    /* Responsive chips */
+    @media (max-width: 500px) {
+      .chip-list-horas {
+        gap: 6px;
+      }
+
+      .chip-hora {
+        font-size: 0.97rem;
+        padding: 8px 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="calendar-container">
+    <div class="calendar-header">
+      <button onclick="changeMonth(-1)">‹</button>
+      <div id="monthTitle"></div>
+      <button onclick="changeMonth(1)">›</button>
+    </div>
+    <table class="calendar-table">
+      <thead>
+        <tr>
+          <th>L</th>
+          <th>M</th>
+          <th>M</th>
+          <th>J</th>
+          <th>V</th>
+          <th>S</th>
+          <th>D</th>
+        </tr>
+      </thead>
+      <tbody id="calendarBody"></tbody>
+    </table>
+  </div>
+  <script>
+    // ... --- Código de tu calendario (igual que el tuyo) --- ...
+    // FECHA BASE solo para mostrar el mes inicial, ya no para comparar "hoy"
+    const todayBase = new Date();
+    const calendarBody = document.getElementById('calendarBody');
+    const monthTitle = document.getElementById('monthTitle');
+    const monthNames = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+
+    let selectedYear = todayBase.getFullYear();
+    let selectedMonth = todayBase.getMonth();
+
+    function changeMonth(offset) {
+      selectedMonth += offset;
+      if (selectedMonth < 0) { selectedMonth = 11; selectedYear--; }
+      else if (selectedMonth > 11) { selectedMonth = 0; selectedYear++; }
+      generateCalendar(selectedYear, selectedMonth);
+    }
+
+    // Reglas de horarios
+    function getHorarios(tipoCita, dayOfWeek) {
+      if (tipoCita === "Experiencia Liceo") {
+        if (dayOfWeek !== 2) return null; // solo miércoles
+        return { horaMin: "08:30", horaMax: "14:00", step: 30 };
+      } else if (tipoCita === "Asesor Académico") {
+        if (dayOfWeek === 6) return null; // no domingo
+        return { horaMin: "07:00", horaMax: "19:00", step: 60 };
+      }
+      return null;
+    }
+
+    function hayHorariosDisponibles(tipoCita, fecha, dayOfWeek) {
+      const horarios = getHorarios(tipoCita, dayOfWeek);
+      if (!horarios) return false;
+
+      let [h, m] = horarios.horaMin.split(':').map(Number);
+      const [hMax, mMax] = horarios.horaMax.split(':').map(Number);
+
+      const fechaActual = new Date();
+      const fechaSeleccionada = new Date(fecha);
+      const esHoy = fechaActual.toDateString() === fechaSeleccionada.toDateString();
+
+      if (esHoy && fechaActual.getHours() >= 19) {
+        return false;
+      }
+
+      if (!esHoy) {
+        return true;
+      }
+
+      while (h < hMax || (h === hMax && m <= mMax)) {
+        if (h > fechaActual.getHours() || (h === fechaActual.getHours() && m > fechaActual.getMinutes())) {
+          return true;
+        }
+        m += horarios.step;
+        if (m >= 60) { h += Math.floor(m / 60); m = m % 60; }
+      }
+      return false;
+    }
+
+    function hayHorariosDisponiblesParaElDia(dateObj, dayOfWeek) {
+      return ["Experiencia Liceo", "Asesor Académico"].some(tipo =>
+        hayHorariosDisponibles(tipo, dateObj.toISOString().slice(0, 10), dayOfWeek)
+      );
+    }
+
+    function generateCalendar(year, month) {
+      calendarBody.innerHTML = '';
+      monthTitle.textContent = `${monthNames[month]} ${year}`;
+      const firstDay = (new Date(year, month, 1).getDay() + 6) % 7; // lunes = 0
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      let date = 1;
+
+      for (let i = 0; i < 6; i++) {
+        const row = document.createElement('tr');
+        for (let j = 0; j < 7; j++) {
+          const cell = document.createElement('td');
+          const dayWrapper = document.createElement('div');
+          dayWrapper.classList.add('calendar-day');
+
+          if (i === 0 && j < firstDay) {
+            cell.classList.add('disabled');
+          } else if (date > daysInMonth) {
+            cell.classList.add('disabled');
+          } else {
+            const cellDate = new Date(year, month, date);
+
+            // lunes = 0 ... domingo = 6
+            const cellDayOfWeek = (cellDate.getDay() + 6) % 7;
+
+            // ¡CAMBIO! Siempre compara con la fecha actual del sistema
+            const now = new Date();
+            const isToday = cellDate.toDateString() === now.toDateString();
+            const isPast = cellDate < (new Date()).setHours(0, 0, 0, 0);
+            const isWeekend = cellDayOfWeek >= 5;
+
+            dayWrapper.textContent = date;
+
+            const disponible = !isPast && hayHorariosDisponiblesParaElDia(cellDate, cellDayOfWeek);
+
+            if (!disponible) {
+              cell.classList.add('disabled');
+            } else {
+              if (isToday) cell.classList.add('today');
+              if (isWeekend) dayWrapper.classList.add('weekend');
+              cell.onclick = () => startAppointment(cellDate.toISOString().slice(0, 10), cellDayOfWeek, cellDate);
+            }
+            date++;
+          }
+          cell.appendChild(dayWrapper);
+          row.appendChild(cell);
+        }
+        calendarBody.appendChild(row);
+      }
+    }
+
+    generateCalendar(selectedYear, selectedMonth);
+    setInterval(() => {
+      const current = new Date();
+      if (current.getMonth() === selectedMonth && current.getFullYear() === selectedYear) {
+        generateCalendar(selectedYear, selectedMonth);
+      }
+    }, 60000);
+
+    // ---- FUNCIÓN MODERNA PARA SELECCIONAR HORA (CHIPS) ----
+    async function selectHoraChips(horasArray) {
+      return new Promise((resolve) => {
+        let chipsHTML = `<div class="chip-list-horas">`;
+        horasArray.forEach(h => {
+          chipsHTML += `<button type="button" class="chip-hora" data-hora="${h.value}" tabindex="0">${h.label}</button>`;
+        });
+        chipsHTML += `</div>`;
+        Swal.fire({
+          title: 'Selecciona la hora',
+          html: chipsHTML,
+          showCancelButton: true,
+          confirmButtonText: 'Siguiente',
+          allowOutsideClick: false,
+          focusConfirm: false,
+          preConfirm: () => {
+            const selected = document.querySelector('.chip-hora.selected');
+            if (!selected) {
+              Swal.showValidationMessage('Selecciona una hora antes de continuar');
+              return false;
+            }
+            return selected.getAttribute('data-hora');
+          },
+          didOpen: () => {
+            const chipBtns = document.querySelectorAll('.chip-hora');
+            chipBtns.forEach(btn => {
+              btn.addEventListener('click', () => {
+                chipBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                Swal.resetValidationMessage(); // Limpia mensaje si selecciona
+              });
+              btn.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                  e.preventDefault();
+                  btn.click();
+                }
+              });
+            });
+          }
+        }).then((result) => {
+          resolve(result.isConfirmed ? result.value : null);
+        });
+      });
+    }
+
+    // ------ REEMPLAZA TU SELECCIÓN DE HORA POR ESTA PARTE -------
+    async function startAppointment(fecha, dayOfWeek, cellDate) {
+      const tipoCita = await new Promise((resolve) => {
+        Swal.fire({
+          title: `Selecciona el tipo de cita`,
+          html: `
+        <button onclick="Swal.__tipo='Experiencia Liceo'; Swal.close()">🎓 Experiencia Liceo</button>
+        <button onclick="Swal.__tipo='Asesor Académico'; Swal.close()">📘 Asesor Académico</button>`,
+          showCancelButton: true,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          willClose: () => resolve(Swal.__tipo || null)
+        });
+      });
+      if (!tipoCita) return;
+
+      const horarios = getHorarios(tipoCita, dayOfWeek);
+      if (!horarios) {
+        Swal.fire({
+          icon: 'info',
+          title: tipoCita === "Experiencia Liceo"
+            ? '⏰ Solo disponible miércoles'
+            : '🚫 No se puede agendar en domingo',
+          html: tipoCita === "Experiencia Liceo"
+            ? `<div style="font-size:1.1em; margin-bottom:5px;"><b>La “Experiencia Liceo” solo puede agendarse los <span style="color:#6366f1;">miércoles</span>.</b></div>
+       <div style="font-size:0.97em; color:#555;">
+         Por favor selecciona un <b>miércoles</b> en el calendario.
+       </div>`
+            : `<div style="font-size:1.1em; margin-bottom:5px;"><b>No puedes agendar “Asesor Académico” en <span style="color:#ef4444;">domingo</span>.</b></div>
+       <div style="font-size:0.97em; color:#555;">
+         Elige otro día de la semana para tu cita.
+       </div>`,
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#6366f1',
+          background: '#f8fafc',
+          width: 420,
+          customClass: { popup: 'swal2-border-radius-xl' }
+        });
+        return;
+      }
+
+      const todayObj = new Date();
+      const selectedDateObj = cellDate;
+      const isToday = todayObj.toISOString().slice(0, 10) === selectedDateObj.toISOString().slice(0, 10);
+      let horaActual = 0, minutoActual = 0;
+      if (isToday) {
+        horaActual = todayObj.getHours();
+        minutoActual = todayObj.getMinutes();
+      }
+
+      // Generar array de horas disponibles
+      let horasDisponibles = [];
+      let [h, m] = horarios.horaMin.split(':').map(Number);
+      const [hMax, mMax] = horarios.horaMax.split(':').map(Number);
+
+      function to12hFormat(h, m) {
+        let suffix = h < 12 ? 'am' : 'pm';
+        let hour12 = h % 12;
+        if (hour12 === 0) hour12 = 12;
+        return `${hour12.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} ${suffix}`;
+      }
+
+      while (h < hMax || (h === hMax && m <= mMax)) {
+        let mostrar = true;
+        if (isToday) {
+          if (h < horaActual || (h === horaActual && m <= minutoActual)) {
+            mostrar = false;
+          }
+        }
+        if (mostrar) {
+          let val = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+          let label = to12hFormat(h, m);
+          horasDisponibles.push({ value: val, label: label });
+        }
+        m += horarios.step;
+        if (m >= 60) { h += Math.floor(m / 60); m = m % 60; }
+      }
+
+      if (horasDisponibles.length === 0) {
+        Swal.fire({
+          icon: 'info',
+          title: 'No hay horarios disponibles',
+          text: isToday ?
+            'Ya no quedan horarios para el día de hoy. Selecciona otra fecha.' :
+            'No hay horarios para este día. Intenta con otra fecha.'
+        });
+        return;
+      }
+
+      // 👉 Aquí la nueva selección visual:
+      const horaSeleccionada = await selectHoraChips(horasDisponibles);
+      if (!horaSeleccionada) return;
+
+      const { value: formData } = await Swal.fire({
+        title: 'Datos personales',
+        html:
+          `<input id="nombre" class="swal2-input" placeholder="Nombre completo">
+           <input id="contacto" class="swal2-input" placeholder="Correo electrónico o celular">
+           <textarea id="nota" class="swal2-textarea" placeholder="Nota (opcional)"></textarea>`,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Enviar',
+        allowOutsideClick: false,
+        preConfirm: () => {
+          const nombre = document.getElementById('nombre').value.trim();
+          const contacto = document.getElementById('contacto').value.trim();
+          const nombreValido = /^[a-zA-ZÁÉÍÓÚáéíóúÑñ ]+$/.test(nombre);
+          const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contacto);
+          const celularValido = /^[0-9]{7,15}$/.test(contacto);
+          if (!nombre || !nombreValido) {
+            Swal.showValidationMessage('Nombre inválido (solo letras y espacios)');
+            return false;
+          }
+          if (!contacto || (!correoValido && !celularValido)) {
+            Swal.showValidationMessage('Debes ingresar un correo electrónico válido o un número de celular válido (solo números, 7-15 dígitos).');
+            return false;
+          }
+          return {
+            nombre,
+            contacto,
+            nota: document.getElementById('nota').value.trim(),
+            tipo: correoValido ? 'correo' : 'celular'
+          };
+        }
+      });
+
+      if (!formData) return;
+
+      try {
+        const response = await fetch('/api/citas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fecha,
+            tipo_cita: tipoCita,
+            hora: horaSeleccionada,
+            nombre: formData.nombre,
+            contacto: formData.contacto,
+            nota: formData.nota
+          })
+        });
+        const result = await response.json();
+        if (result.ok) {
+          if (result.tipo === 'whatsapp') {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Cita agendada!',
+              html: `<p>Haz clic en el botón para recibir la confirmación por WhatsApp:</p>
+                  <a href="${result.waUrl}" class="btn btn-success" target="_blank" rel="noopener">Abrir WhatsApp</a>`
+            });
+          } else {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Cita agendada!',
+              text: 'En breve recibirás un correo de confirmación.'
+            });
+          }
+        } else {
+          Swal.fire('¡Error!', result.error || 'No se pudo guardar la cita.', 'error');
+        }
+      } catch (error) {
+        Swal.fire('¡Error!', 'No se pudo guardar la cita. Intenta de nuevo.', 'error');
+      }
+    }
+  </script>
+</body>
+
+</html>
